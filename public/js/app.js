@@ -336,6 +336,7 @@ document.getElementById('btnTypeNew').addEventListener('click', function() {
   document.getElementById('btnTypeExisting').classList.remove('active');
   document.getElementById('existingSearch').classList.add('hidden');
   document.getElementById('applicantForm').style.display = 'block';
+  updateAnnCountButtons();
 });
 document.getElementById('btnTypeExisting').addEventListener('click', function() {
   state.applicantType = 'existing';
@@ -407,9 +408,6 @@ async function searchExistingApplicant(name) {
         document.getElementById('applyDept').value = app.department || '';
         document.getElementById('applyEmpId').value = app.employee_id || '';
         document.getElementById('applyContact').value = app.contact || '';
-        state.applicantType = 'new';
-        document.getElementById('btnTypeNew').classList.add('active');
-        document.getElementById('btnTypeExisting').classList.remove('active');
         document.getElementById('existingSearch').classList.add('hidden');
         document.getElementById('applicantForm').style.display = 'block';
         fetchUsage(app.employee_name);
@@ -423,9 +421,6 @@ async function searchExistingApplicant(name) {
         document.getElementById('applyDept').value = '';
         document.getElementById('applyEmpId').value = '';
         document.getElementById('applyContact').value = '';
-        state.applicantType = 'new';
-        document.getElementById('btnTypeNew').classList.add('active');
-        document.getElementById('btnTypeExisting').classList.remove('active');
         document.getElementById('existingSearch').classList.add('hidden');
         document.getElementById('applicantForm').style.display = 'block';
         fetchUsage(n);
@@ -521,12 +516,31 @@ document.getElementById('btnAlertContinue').addEventListener('click', function()
 document.getElementById('btnStep1Next').addEventListener('click', function() {
   var name = document.getElementById('applyName').value.trim();
   if (!name) { toast('이름을 입력해주세요', 'error'); return; }
+  updateAnnCountButtons();
   goToStep(2);
 });
 
 /* ── Step 2 - 기념일 횟수 + 슬롯 ─────────────── */
+function updateAnnCountButtons() {
+  var btn2 = document.querySelector('.ann-count-btn[data-count="2"]');
+  if (state.applicantType === 'existing') {
+    btn2.disabled = true;
+    btn2.title = '기존 신청자는 1회만 신청 가능합니다';
+    btn2.style.opacity = '0.4';
+    // 강제 1회로 리셋
+    document.querySelectorAll('.ann-count-btn').forEach(function(b) { b.classList.toggle('active', b.dataset.count === '1'); });
+    state.numAnniversaries = 1;
+    document.getElementById('annSlot1').classList.add('hidden');
+  } else {
+    btn2.disabled = false;
+    btn2.title = '';
+    btn2.style.opacity = '';
+  }
+}
+
 document.querySelectorAll('.ann-count-btn').forEach(function(btn) {
   btn.addEventListener('click', function() {
+    if (btn.disabled) return;
     document.querySelectorAll('.ann-count-btn').forEach(function(b) { b.classList.remove('active'); });
     btn.classList.add('active');
     state.numAnniversaries = parseInt(btn.dataset.count);
