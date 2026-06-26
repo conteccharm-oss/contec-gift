@@ -657,15 +657,24 @@ body {
 }
 .dvend-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 .fmans-excel-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 16px; background: #FFF5F5; border-bottom: 1px solid #FFD5D5;
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  padding: 12px 16px; background: #FFF5F5; border-bottom: 1px solid #FFD5D5;
 }
-.fmans-excel-desc { font-size: 12px; color: var(--text-muted); }
+.fmans-excel-desc { font-size: 12px; color: var(--text-muted); flex: 1; min-width: 120px; }
 .btn-fmans-excel {
   padding: 8px 16px; background: #217346; color: white;
   border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer;
-  white-space: nowrap;
+  white-space: nowrap; transition: opacity 0.15s;
 }
+.btn-fmans-excel:hover { opacity: 0.85; }
+.btn-order-email {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 16px; background: var(--primary); color: white;
+  border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer;
+  white-space: nowrap; transition: opacity 0.15s; box-shadow: 0 2px 6px rgba(255,107,107,0.35);
+}
+.btn-order-email:hover { opacity: 0.85; }
+.btn-order-email:disabled { opacity: 0.5; cursor: not-allowed; }
 .delivery-list { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
 .delivery-card { background: var(--white); border-radius: var(--radius); padding: 14px; box-shadow: var(--shadow); max-width: 800px; }
 .delivery-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
