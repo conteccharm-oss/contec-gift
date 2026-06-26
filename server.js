@@ -474,6 +474,7 @@ app.post('/api/send-order-email', async (req, res) => {
     const mailOptions = {
       from: `"컨텍 가족사랑기프트" <${emailUser}>`,
       to: vendorEmail,
+      cc: 'charm@contec.kr',
       subject: `[컨텍] ${vendorLabel} 발주 요청 (${apps.length}건) - ${today}`,
       html,
     };

@@ -363,15 +363,15 @@
         <div id="fmansExcelRow" class="fmans-excel-row">
           <div class="fmans-excel-desc">꽃집청년들 발주용 엑셀을 다운로드하거나 담당자 이메일로 발송합니다</div>
           <button class="btn-fmans-excel" id="btnFmansExcel">📊 Excel 다운로드</button>
-          <button class="btn-order-email" id="btnOrderEmail" data-vendor="fmans">📧 발주 이메일 발송</button>
+          <button class="btn-order-email" id="btnOrderEmail" data-vendor="fmans" onclick="showOrderPreview('fmans')">📧 발주 이메일 발송</button>
         </div>
         <div id="sirloinOrderRow" class="fmans-excel-row" style="display:none">
           <div class="fmans-excel-desc">설로인 담당자 이메일로 발주 내역을 발송합니다</div>
-          <button class="btn-order-email" id="btnOrderEmailSirloin" data-vendor="sirloin">📧 발주 이메일 발송</button>
+          <button class="btn-order-email" id="btnOrderEmailSirloin" data-vendor="sirloin" onclick="showOrderPreview('sirloin')">📧 발주 이메일 발송</button>
         </div>
         <div id="allfreshOrderRow" class="fmans-excel-row" style="display:none">
           <div class="fmans-excel-desc">올프레쉬 담당자 이메일로 발주 내역을 발송합니다</div>
-          <button class="btn-order-email" id="btnOrderEmailAllfresh" data-vendor="allfresh">📧 발주 이메일 발송</button>
+          <button class="btn-order-email" id="btnOrderEmailAllfresh" data-vendor="allfresh" onclick="showOrderPreview('allfresh')">📧 발주 이메일 발송</button>
         </div>
         <div id="deliveryList" class="delivery-list"></div>
       </div>
