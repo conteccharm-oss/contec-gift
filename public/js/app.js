@@ -104,10 +104,9 @@ async function confirmAdminPw() {
   var pw = document.getElementById('adminPwInput').value;
   var errEl = document.getElementById('adminLockError');
   try {
-    var res = await fetch(API + '/api/settings');
-    var s = await res.json();
-    var stored = s.admin_pw || 'contec@admin';
-    if (pw === stored) {
+    var res = await fetch(API + '/api/verify-admin', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({password: pw}) });
+    var data = await res.json();
+    if (data.ok) {
       sessionStorage.setItem('adminAuth', '1');
       document.getElementById('adminLockModal').classList.add('hidden');
       switchTab(_pendingAdminTab);

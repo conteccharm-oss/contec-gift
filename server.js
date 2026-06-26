@@ -107,12 +107,22 @@ app.delete('/api/selections/:anniversary_id/:product_id', (req, res) => {
 app.get('/api/settings', (req, res) => {
   const s = db.getAllSettings();
   if (s.email_pass) s.email_pass = '••••••••';
+  if (s.admin_pw) s.admin_pw = '••••••••';
   res.json(s);
+});
+
+app.post('/api/verify-admin', (req, res) => {
+  const { password } = req.body;
+  const stored = db.getSetting('admin_pw') || 'contec@admin';
+  res.json({ ok: password === stored });
 });
 
 app.post('/api/settings', (req, res) => {
   const allowed = ['email_to', 'email_user', 'email_pass', 'admin_pw', 'employee_list',
-    'google_form_url', 'google_form_entry1', 'google_form_entry2', 'google_form_entry_occasion'];
+    'google_form_url', 'google_form_entry1', 'google_form_entry2', 'google_form_entry_occasion',
+    'vendor_fmansname', 'vendor_fmansemail', 'vendor_fmansphone',
+    'vendor_sirloinname', 'vendor_sirloinemail', 'vendor_sirloinphone',
+    'vendor_allfreshname', 'vendor_alfreshemail', 'vendor_allfreshphone'];
   for (const key of allowed) {
     if (req.body[key] !== undefined && req.body[key] !== '••••••••') {
       db.setSetting(key, req.body[key]);
