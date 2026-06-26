@@ -399,8 +399,8 @@ app.post('/api/send-order-email', async (req, res) => {
   const vendorLabel = VENDOR_LABELS[vendor] || vendor;
 
   const s = db.getAllSettings();
-  const emailUser = s.email_user;
-  const emailPass = s.email_pass;
+  const emailUser = s.email_user || process.env.EMAIL_USER;
+  const emailPass = s.email_pass || process.env.EMAIL_PASS;
   const vendorEmail = s['vendor_' + vendor + 'email'];
 
   if (!emailUser || !emailPass) return res.status(400).json({ error: '발신 이메일 설정이 없습니다. 설정 탭에서 이메일을 설정해주세요.' });
