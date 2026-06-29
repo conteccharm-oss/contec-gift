@@ -940,6 +940,7 @@ document.getElementById('btnNewApply').addEventListener('click', function() {
    배송 관리
 ═══════════════════════════════════════════════ */
 var _deliveryVendor = 'fmans';
+var _deliveryMonth = String(new Date().getMonth() + 1);
 
 document.querySelectorAll('.dvend-btn').forEach(function(btn) {
   btn.addEventListener('click', function() {
@@ -952,6 +953,22 @@ document.querySelectorAll('.dvend-btn').forEach(function(btn) {
     renderDeliveryList();
   });
 });
+
+document.querySelectorAll('.dmonth-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.dmonth-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    _deliveryMonth = btn.dataset.month;
+    renderDeliveryList();
+  });
+});
+
+function initDeliveryMonthBar() {
+  var cur = String(new Date().getMonth() + 1);
+  document.querySelectorAll('.dmonth-btn').forEach(function(btn) {
+    btn.classList.toggle('active', btn.dataset.month === cur);
+  });
+}
 
 var _pendingOrderVendor = '';
 var VENDOR_LABELS = { fmans: '꽃집청년들', sirloin: '설로인', allfresh: '올프레쉬' };
@@ -981,8 +998,13 @@ async function showOrderPreview(vendor) {
     var vendorEmail = settings['vendor_' + vendor + 'email'] || '(이메일 미설정)';
 
     var filtered = apps.filter(function(a) {
-      return a.status !== 'cancelled' &&
-        (a.products || []).some(function(p) { return p.vendor === vendor; });
+      if (a.status === 'cancelled') return false;
+      if (!(a.products || []).some(function(p) { return p.vendor === vendor; })) return false;
+      if (_deliveryMonth !== 'all') {
+        if (!a.anniversary_date) return false;
+        if (parseInt(a.anniversary_date.split('-')[1]) !== parseInt(_deliveryMonth)) return false;
+      }
+      return true;
     }).sort(function(a, b) { return (a.anniversary_date || '').localeCompare(b.anniversary_date || ''); });
 
     if (!filtered.length) {
@@ -1039,7 +1061,7 @@ document.getElementById('btnOrderPreviewSend').addEventListener('click', async f
     var res = await fetch(API + '/api/send-order-email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ vendor: _pendingOrderVendor }),
+      body: JSON.stringify({ vendor: _pendingOrderVendor, month: _deliveryMonth }),
     });
     var data = await res.json();
     document.getElementById('orderPreviewModal').classList.add('hidden');
@@ -1075,11 +1097,21 @@ function deadlineBadge(daysLeft) {
 }
 
 async function loadDeliverySchedule() {
+  initDeliveryMonthBar();
   if (!allApplications.length) {
     var res = await fetch(API + '/api/applications');
     allApplications = await res.json();
   }
   renderDeliveryList();
+}
+
+function filterByMonth(apps) {
+  if (_deliveryMonth === 'all') return apps;
+  var m = parseInt(_deliveryMonth);
+  return apps.filter(function(a) {
+    if (!a.anniversary_date) return false;
+    return parseInt(a.anniversary_date.split('-')[1]) === m;
+  });
 }
 
 function renderDeliveryList() {
@@ -1088,6 +1120,7 @@ function renderDeliveryList() {
     return a.status !== 'cancelled' &&
       (a.products || []).some(function(p) { return p.vendor === _deliveryVendor; });
   });
+  apps = filterByMonth(apps);
   apps.sort(function(a, b) { return (a.anniversary_date||'').localeCompare(b.anniversary_date||''); });
   if (!apps.length) {
     list.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><p class="empty-text">해당 업체 신청 내역이 없습니다</p></div>';

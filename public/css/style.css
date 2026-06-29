@@ -656,6 +656,17 @@ body {
   font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s;
 }
 .dvend-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+.delivery-month-bar {
+  display: flex; gap: 6px; padding: 10px 16px; background: #FFFBFC;
+  border-bottom: 1px solid var(--border); overflow-x: auto; scrollbar-width: none;
+}
+.delivery-month-bar::-webkit-scrollbar { display: none; }
+.dmonth-btn {
+  flex-shrink: 0; padding: 5px 12px; border-radius: 14px;
+  border: 1.5px solid var(--border); background: var(--white); color: var(--text-muted);
+  font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s;
+}
+.dmonth-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 .fmans-excel-row {
   display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
   padding: 12px 16px; background: #FFF5F5; border-bottom: 1px solid #FFD5D5;

@@ -394,7 +394,7 @@ app.post('/api/google-form-url', (req, res) => {
 
 // ── 발주 이메일 발송 ──────────────────────────────────────
 app.post('/api/send-order-email', async (req, res) => {
-  const { vendor } = req.body;
+  const { vendor, month } = req.body;
   const VENDOR_LABELS = { fmans: '꽃집청년들', sirloin: '설로인', allfresh: '올프레쉬' };
   const vendorLabel = VENDOR_LABELS[vendor] || vendor;
 
@@ -406,13 +406,19 @@ app.post('/api/send-order-email', async (req, res) => {
   if (!emailUser || !emailPass) return res.status(400).json({ error: '발신 이메일 설정이 없습니다. 설정 탭에서 이메일을 설정해주세요.' });
   if (!vendorEmail) return res.status(400).json({ error: `${vendorLabel} 담당자 이메일이 없습니다. 설정 탭에서 입력해주세요.` });
 
-  const apps = db.getAllApplications().filter(a =>
+  let apps = db.getAllApplications().filter(a =>
     a.status !== 'cancelled' &&
     (a.products || []).some(p => p.vendor === vendor)
-  ).sort((a, b) => (a.anniversary_date || '').localeCompare(b.anniversary_date || ''));
+  );
+  if (month && month !== 'all') {
+    const m = parseInt(month);
+    apps = apps.filter(a => a.anniversary_date && parseInt(a.anniversary_date.split('-')[1]) === m);
+  }
+  apps.sort((a, b) => (a.anniversary_date || '').localeCompare(b.anniversary_date || ''));
 
   if (!apps.length) return res.status(400).json({ error: '발주할 신청 내역이 없습니다.' });
 
+  const monthLabel = (month && month !== 'all') ? ` ${month}월` : '';
   const today = new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
 
   const rows = apps.map((a, i) => {
@@ -438,7 +444,7 @@ app.post('/api/send-order-email', async (req, res) => {
 <body style="font-family:-apple-system,'Apple SD Gothic Neo',Arial,sans-serif;background:#f5f5f5;margin:0;padding:20px;">
   <div style="max-width:900px;margin:0 auto;background:white;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.1);">
     <div style="background:linear-gradient(135deg,#FF6B6B,#FF8E53);padding:28px 32px;">
-      <div style="color:white;font-size:22px;font-weight:700;">📦 ${vendorLabel} 발주 요청</div>
+      <div style="color:white;font-size:22px;font-weight:700;">📦 ${vendorLabel} 발주 요청${monthLabel}</div>
       <div style="color:rgba(255,255,255,0.85);font-size:14px;margin-top:6px;">${today} · 총 ${apps.length}건</div>
     </div>
     <div style="padding:24px;overflow-x:auto;">
@@ -475,7 +481,7 @@ app.post('/api/send-order-email', async (req, res) => {
       from: `"컨텍 가족사랑기프트" <${emailUser}>`,
       to: vendorEmail,
       cc: 'charm@contec.kr',
-      subject: `[컨텍] ${vendorLabel} 발주 요청 (${apps.length}건) - ${today}`,
+      subject: `[컨텍] ${vendorLabel} 발주 요청 (${apps.length}건)${monthLabel} - ${today}`,
       html,
     };
 
