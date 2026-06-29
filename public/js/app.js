@@ -2,6 +2,7 @@
    가족사랑기프트 - app.js
    ────────────────────────────────────────────── */
 const API = '';
+var PRODUCT_PAGE_SIZE = 10;
 var APPLY_PAGE_SIZE = 10;
 
 // ── 이미지 프록시 ──────────────────────────────
@@ -31,6 +32,7 @@ var state = {
   currentVendor: 'all',
   priceRange: 'all',
   searchQ: '',
+  productPage: 1,
   applyVendor: 'all',
   applyPriceRange: 'all',
   applyPage: 1,
@@ -149,7 +151,31 @@ async function loadProducts() {
 function renderMainProductGrid() {
   var grid = document.getElementById('productGrid');
   var list = state.products.filter(function(p) { return priceInRange(p.price, state.priceRange); });
-  renderProductGrid(grid, list, false);
+  var totalPages = Math.max(1, Math.ceil(list.length / PRODUCT_PAGE_SIZE));
+  var page = Math.min(state.productPage, totalPages);
+  state.productPage = page;
+  renderProductGrid(grid, list.slice((page-1)*PRODUCT_PAGE_SIZE, page*PRODUCT_PAGE_SIZE), false);
+  renderMainPagination(list.length, totalPages, page);
+}
+
+function renderMainPagination(total, totalPages, current) {
+  var bar = document.getElementById('mainPagination');
+  if (totalPages <= 1) { bar.innerHTML = ''; return; }
+  var html = '';
+  if (current > 1) html += '<button class="page-btn" data-page="' + (current-1) + '">‹</button>';
+  for (var i = 1; i <= totalPages; i++) {
+    html += '<button class="page-btn' + (i === current ? ' active' : '') + '" data-page="' + i + '">' + i + '</button>';
+  }
+  if (current < totalPages) html += '<button class="page-btn" data-page="' + (current+1) + '">›</button>';
+  html += '<span class="page-info">' + total + '개 중 ' + ((current-1)*PRODUCT_PAGE_SIZE+1) + '~' + Math.min(current*PRODUCT_PAGE_SIZE, total) + '</span>';
+  bar.innerHTML = html;
+  bar.querySelectorAll('.page-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      state.productPage = parseInt(btn.dataset.page);
+      renderMainProductGrid();
+      document.getElementById('productGrid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
 }
 
 /* ── 찜하기 (IP 기반 서버 저장) ───────────────── */
@@ -252,6 +278,7 @@ document.querySelectorAll('.chip[data-vendor]').forEach(function(chip) {
     document.querySelectorAll('.chip[data-vendor]').forEach(function(c) { c.classList.remove('active'); });
     chip.classList.add('active');
     state.currentVendor = chip.dataset.vendor;
+    state.productPage = 1;
     loadProducts();
   });
 });
@@ -261,6 +288,7 @@ document.querySelectorAll('.chip[data-price]').forEach(function(chip) {
     document.querySelectorAll('.chip[data-price]').forEach(function(c) { c.classList.remove('active'); });
     chip.classList.add('active');
     state.priceRange = chip.dataset.price;
+    state.productPage = 1;
     renderMainProductGrid();
   });
 });
@@ -268,7 +296,7 @@ document.querySelectorAll('.chip[data-price]').forEach(function(chip) {
 var searchTimer;
 document.getElementById('searchInput').addEventListener('input', function(e) {
   clearTimeout(searchTimer);
-  searchTimer = setTimeout(function() { state.searchQ = e.target.value.trim(); loadProducts(); }, 350);
+  searchTimer = setTimeout(function() { state.searchQ = e.target.value.trim(); state.productPage = 1; loadProducts(); }, 350);
 });
 
 document.getElementById('btnCrawl').addEventListener('click', triggerCrawl);
