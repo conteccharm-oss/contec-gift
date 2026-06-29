@@ -877,3 +877,60 @@ body {
   .settings-card { max-width: 100%; margin: 8px 0; }
   .delivery-card { max-width: 100%; }
 }
+
+/* ── 소형 모바일 (600px 이하) ── */
+@media (max-width: 600px) {
+  /* 히어로 배너 세로 스택 */
+  .hero-banner {
+    flex-direction: column;
+    padding: 20px 16px;
+    gap: 0;
+  }
+  .hero-deco { display: none; }
+  .hero-title { font-size: 22px; }
+  .hero-desc { font-size: 13px; }
+}
+
+/* ── 초소형 모바일 (480px 이하) ── */
+@media (max-width: 480px) {
+  /* 헤더: 로고 축소 */
+  .logo { font-size: 13px; }
+  .logo-emoji { font-size: 18px; }
+
+  /* 헤더 네비: 텍스트 숨기고 아이콘만 표시 */
+  .nav-item { padding: 8px 10px; font-size: 0; gap: 0; }
+  .nav-item .nav-icon { font-size: 18px; }
+
+  /* 히어로 */
+  .hero-banner { padding: 16px; }
+  .hero-title { font-size: 18px; }
+  .hero-badge { font-size: 11px; padding: 4px 10px; }
+
+  /* 메인 패딩 */
+  .main-content { padding: 8px 8px 32px; }
+
+  /* 필터바 */
+  .filter-bar { padding: 8px 10px; }
+  .chip { padding: 6px 12px; font-size: 12px; }
+
+  /* 스텝 탭 */
+  .step-tab { font-size: 11px; padding: 10px 2px; }
+  .step-tab-num { width: 22px; height: 22px; font-size: 10px; }
+
+  /* 스텝 카드 */
+  .step-card { padding: 16px; }
+
+  /* 어드민 서브 네비 */
+  .admin-sub-btn { font-size: 11px; padding: 10px 2px; }
+
+  /* 배송관리 엑셀 버튼 행 */
+  .fmans-excel-row { flex-direction: column; align-items: stretch; gap: 6px; }
+  .btn-fmans-excel, .btn-order-email { width: 100%; justify-content: center; }
+
+  /* 모달 */
+  .modal-header h3 { font-size: 14px; }
+
+  /* 주소 검색 행 */
+  .addr-search-row { flex-direction: column; }
+  .btn-addr-search { width: 100%; text-align: center; }
+}
